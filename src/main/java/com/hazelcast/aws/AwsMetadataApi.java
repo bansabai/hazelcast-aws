@@ -26,6 +26,8 @@ import static com.hazelcast.aws.AwsRequestUtils.createRestClient;
 import static com.hazelcast.aws.RestClient.HTTP_NOT_FOUND;
 import static com.hazelcast.aws.RestClient.HTTP_OK;
 
+// https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html
+
 /**
  * Responsible for connecting to AWS EC2 and ECS Metadata API.
  *
@@ -35,6 +37,9 @@ import static com.hazelcast.aws.RestClient.HTTP_OK;
  */
 class AwsMetadataApi {
     private static final ILogger LOGGER = Logger.getLogger(AwsMetadataApi.class);
+
+    private static final String EC2_IMDSv2_TOKEN_ENDPOINT = "http://169.254.169.254/latest/api/token";
+
     private static final String EC2_METADATA_ENDPOINT = "http://169.254.169.254/latest/meta-data";
     private static final String ECS_IAM_ROLE_METADATA_ENDPOINT = "http://169.254.170.2" + System.getenv(
         "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI");
@@ -42,12 +47,14 @@ class AwsMetadataApi {
 
     private static final String SECURITY_CREDENTIALS_URI = "/iam/security-credentials/";
 
+    private final String imdsV2TokenEndpoint;
     private final String ec2MetadataEndpoint;
     private final String ecsIamRoleEndpoint;
     private final String ecsTaskMetadataEndpoint;
     private final AwsConfig awsConfig;
 
     AwsMetadataApi(AwsConfig awsConfig) {
+        this.imdsV2TokenEndpoint = EC2_IMDSv2_TOKEN_ENDPOINT;
         this.ec2MetadataEndpoint = EC2_METADATA_ENDPOINT;
         this.ecsIamRoleEndpoint = ECS_IAM_ROLE_METADATA_ENDPOINT;
         this.ecsTaskMetadataEndpoint = ECS_TASK_METADATA_ENDPOINT;
@@ -59,10 +66,15 @@ class AwsMetadataApi {
      */
     AwsMetadataApi(String ec2MetadataEndpoint, String ecsIamRoleEndpoint, String ecsTaskMetadataEndpoint,
                    AwsConfig awsConfig) {
+        this.imdsV2TokenEndpoint = EC2_IMDSv2_TOKEN_ENDPOINT;
         this.ec2MetadataEndpoint = ec2MetadataEndpoint;
         this.ecsIamRoleEndpoint = ecsIamRoleEndpoint;
         this.ecsTaskMetadataEndpoint = ecsTaskMetadataEndpoint;
         this.awsConfig = awsConfig;
+    }
+
+    String getToken() {
+        return null;
     }
 
     String availabilityZoneEc2() {

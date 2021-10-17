@@ -51,7 +51,7 @@ final class RestClient {
         return new RestClient(url);
     }
 
-    RestClient withHeaders(Map<String, String> headers) {
+    RestClient withHeaders(Map<String, String> headers) { // TODO X-aws-ec2-metadata-token-ttl-seconds: 21600
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             this.headers.add(new Parameter(entry.getKey(), entry.getValue()));
         }
@@ -88,6 +88,10 @@ final class RestClient {
 
     Response get() {
         return callWithRetries("GET");
+    }
+
+    Response put() {
+        return callWithRetries("PUT");
     }
 
     Response post() {
